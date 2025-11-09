@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aplicación Web Educativa</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #0f172a;
+      color: #f1f5f9;
+    }
+    header {
+      background: #1e293b;
+      padding: 15px;
+      text-align: center;
+      font-size: 1.4em;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      background: #334155;
+      padding: 10px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    section {
+      display: none;
+      padding: 20px;
+      max-width: 900px;
+      margin: auto;
+      background: #1e293b;
+      border-radius: 10px;
+      margin-top: 20px;
+    }
+    .active {
+      display: block;
+    }
+    input, select, button {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: none;
+    }
+    button {
+      background: #22d3ee;
+      color: black;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #06b6d4;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      background: #0f172a;
+    }
+    th, td {
+      border: 1px solid #334155;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background: #334155;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+    }
+    iframe {
+      width: 100%;
+      height: 300px;
+      border: none;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <header>Aplicación Web Educativa</header>
+  <nav>
+    <a href="#" onclick="mostrar('home')">Home</a>
+    <a href="#" onclick="mostrar('alumno')">Cargar Alumno</a>
+    <a href="#" onclick="mostrar('listado')">Listado de Alumnos</a>
+    <a href="#" onclick="mostrar('historia')">Historia de la Institución</a>
+    <a href="#" onclick="mostrar('unidad6')">Unidad 6 – IA Generativa</a>
+  </nav>
+
+  <!-- HOME: Widget de Clima -->
+  <section id="home" class="active">
+    <h2>Clima Actual</h2>
+    <input type="text" id="ciudad" placeholder="Ingresa una ciudad">
+    <button onclick="buscarClima()">Buscar</button>
+    <div id="resultadoClima"></div>
+    <div id="mapa"></div>
+  </section>
+
+  <!-- CARGAR ALUMNO -->
+  <section id="alumno">
+    <h2>Formulario de Alumno</h2>
+    <form id="formAlumno">
+      <input type="text" id="nombre" placeholder="Nombre" required><br>
+      <input type="text" id="curso" placeholder="Curso" required><br>
+      <input type="email" id="email" placeholder="Email" required><br>
+      <button type="submit">Guardar</button>
+    </form>
+    <p id="msg"></p>
+  </section>
+
+  <!-- LISTADO DE ALUMNOS -->
+  <section id="listado">
+    <h2>Listado de Alumnos</h2>
+    <table>
+      <thead>
+        <tr><th>Nombre</th><th>Curso</th><th>Email</th><th>Acción</th></tr>
+      </thead>
+      <tbody id="tablaAlumnos"></tbody>
+    </table>
+  </section>
+
+  <!-- HISTORIA DE LA INSTITUCIÓN -->
+  <section id="historia">
+    <h2>Nuestra Historia</h2>
+    <p>La institución fue fundada en 1990 con el objetivo de brindar educación de calidad y fomentar el desarrollo tecnológico en los estudiantes.</p>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/School_building.jpg/800px-School_building.jpg" alt="Institución">
+  </section>
+
+  <!-- UNIDAD 6: IA GENERATIVA -->
+  <section id="unidad6">
+    <h2>Unidad 6 – IA Generativa</h2>
+    <h3>¿Qué es la IA Generativa?</h3>
+    <p>La IA generativa es una tecnología capaz de crear contenido nuevo (texto, imágenes, audio o código) a partir de patrones aprendidos por modelos entrenados.</p>
+
+    <h3>Herramientas</h3>
+    <ul>
+      <li><b>ChatGPT:</b> para generación de texto y código.</li>
+      <li><b>Copilot:</b> asistente de programación.</li>
+      <li><b>DALL·E:</b> generación de imágenes a partir de texto.</li>
+    </ul>
+
+    <h3>Ejemplo de Prompt</h3>
+    <pre>Genera un diseño web moderno con fondo degradado y un formulario de contacto responsive.</pre>
+
+    <h3>Reflexión Ética</h3>
+    <p>El uso responsable de la IA implica transparencia, privacidad y equidad, evitando sesgos o usos indebidos.</p>
+
+    <h3>Debate</h3>
+    <p>La IA no reemplaza al desarrollador, lo potencia. Permite automatizar tareas, pero la creatividad y el criterio siguen siendo humanos.</p>
+  </section>
+
+  <script>
+    function mostrar(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    // Nuevo: Clima real sin API Key (usando Open-Meteo)
+    async function buscarClima() {
+      const ciudad = document.getElementById('ciudad').value.trim();
+      if (!ciudad) return alert('Ingrese una ciudad');
+
+      try {
+        // Obtener coordenadas desde la API de geocodificación gratuita
+        const geoRes = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${ciudad}&count=1&language=es&format=json`);
+        const geoData = await geoRes.json();
+        if (!geoData.results) throw new Error('Ciudad no encontrada');
+        const { latitude, longitude, name, country } = geoData.results[0];
+
+        // Obtener clima actual
+        const weatherRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current_weather=true`);
+        const weatherData = await weatherRes.json();
+        const clima = weatherData.current_weather;
+
+        // Mostrar datos
+        document.getElementById('resultadoClima').innerHTML = `
+          <h3>${name}, ${country}</h3>
+          <p>Temperatura: ${clima.temperature}°C</p>
+          <p>Viento: ${clima.windspeed} km/h</p>
+        `;
+
+        // Mostrar mapa
+        document.getElementById('mapa').innerHTML = `
+          <iframe src="https://www.google.com/maps?q=${latitude},${longitude}&z=10&output=embed"></iframe>
+        `;
+      } catch (error) {
+        document.getElementById('resultadoClima').innerHTML = `<p>No se pudo obtener el clima. Verifique la ciudad.</p>`;
+        document.getElementById('mapa').innerHTML = '';
+      }
+    }
+
+    // Cargar alumnos (localStorage)
+    const form = document.getElementById('formAlumno');
+    const tabla = document.getElementById('tablaAlumnos');
+    const msg = document.getElementById('msg');
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const alumno = {
+        nombre: document.getElementById('nombre').value,
+        curso: document.getElementById('curso').value,
+        email: document.getElementById('email').value
+      };
+      let alumnos = JSON.parse(localStorage.getItem('alumnos')) || [];
+      alumnos.push(alumno);
+      localStorage.setItem('alumnos', JSON.stringify(alumnos));
+      msg.textContent = 'Alumno guardado correctamente ✅';
+      form.reset();
+      mostrarAlumnos();
+    });
+
+    function mostrarAlumnos() {
+      const alumnos = JSON.parse(localStorage.getItem('alumnos')) || [];
+      tabla.innerHTML = '';
+      alumnos.forEach((a, i) => {
+        const fila = `<tr><td>${a.nombre}</td><td>${a.curso}</td><td>${a.email}</td><td><button onclick="eliminar(${i})">Eliminar</button></td></tr>`;
+        tabla.innerHTML += fila;
+      });
+    }
+
+    function eliminar(i) {
+      let alumnos = JSON.parse(localStorage.getItem('alumnos')) || [];
+      alumnos.splice(i, 1);
+      localStorage.setItem('alumnos', JSON.stringify(alumnos));
+      mostrarAlumnos();
+    }
+
+    mostrarAlumnos();
+  </script>
+</body>
+</html>
